@@ -20,12 +20,11 @@ fn_train = 'train.csv'
 pn_train = 'X:\\My Desktop\\BigData\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
 fn_test = 'test.csv'
 pn_test = 'X:\\My Desktop\\BigData\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
-fn_submit = 'submission.csv'
+fn_submit = 'secondsubmission.csv'
 pn_submit = 'X:\\My Desktop\\BigData\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
 
 # Training Data
 df_train = pd.read_csv(pn_train + fn_train, index_col=0, header=0)
-df_train.Embarked = df_train.Embarked.astype('category')
 df_train.drop(labels='Cabin', axis=1, inplace=True)
 
 cat_dtype = pd.api.types.CategoricalDtype(categories=[1, 2, 3], ordered=True)
@@ -33,9 +32,6 @@ df_train.Pclass = df_train.Pclass.astype(cat_dtype)  # Pclass ordered category
 
 df_train.rename(columns={'Sex': 'Male'}, inplace=True)
 df_train.Male.replace({'male': 1, 'female': 0}, inplace=True)
-
-# Drop missing values in Age. Could introduce a systematic bias
-df_train.dropna(subset=['Age'], inplace=True)
 
 mask = df_train.Age > 18
 column_name = 'Adult'
@@ -45,7 +41,6 @@ df_train.Adult.fillna(0, inplace=True)
 
 # Test Data
 df_test = pd.read_csv(pn_test + fn_test, index_col=0, header=0)
-df_test.Embarked = df_test.Embarked.astype('category')
 df_test.drop(labels='Cabin', axis=1, inplace=True)
 
 cat_dtype = pd.api.types.CategoricalDtype(categories=[1, 2, 3], ordered=True)
@@ -60,6 +55,12 @@ df_test.loc[mask, column_name] = 1
 df_test.Adult.fillna(0, inplace=True)
 
 df_test['Survived'] = np.nan
+
+full_data = [df_train, df_test]
+for dataset in full_data:
+    dataset['Embarked'] = dataset['Embarked'].fillna('S')
+    dataset['Embarked'] = dataset['Embarked'].map( {'S': 0, 'C': 1, 'Q': 2} ).astype(int)
+
 
 # %% EDA
 plt.figure()
@@ -88,7 +89,7 @@ plt.show()
 
 # %% Machine Learning
 y = df_train['Survived'].values
-X = df_train[['Pclass', 'Male', 'Adult']].values
+X = df_train[['Pclass', 'Male', 'Adult', 'Embarked']].values
 X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     test_size=0.3,
                                                     random_state=42)
@@ -100,15 +101,15 @@ y_pred = knn.predict(X_test)
 
 print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
 
-X_realtest = df_test[['Pclass', 'Male', 'Adult']].values
+X_realtest = df_test[['Pclass', 'Male', 'Adult', 'Embarked']].values
 y_realpred = knn.predict(X_realtest)
 
 # %% Data Export
-#first_submission = pd.DataFrame(columns=['PassengerId', 'Survived'])
-#first_submission['PassengerId'] = df_test.index
-#first_submission['Survived'] = y_realpred
+#submission = pd.DataFrame(columns=['PassengerId', 'Survived'])
+#submission['PassengerId'] = df_test.index
+#submission['Survived'] = y_realpred
 #
-#print(first_submission.info())
+#print(submission.info())
 #
-#first_submission.to_csv(pn_submit + fn_submit, columns=['PassengerId','Survived'], index=False)
+#submission.to_csv(pn_submit + fn_submit, columns=['PassengerId','Survived'], index=False)
 
