@@ -17,11 +17,11 @@ from sklearn import metrics
 
 # %% Data Import
 fn_train = 'train.csv'
-pn_train = 'X:\\My Desktop\\BigData\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
+pn_train = 'C:\\Users\\Desktop-TL\\Documents\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
 fn_test = 'test.csv'
-pn_test = 'X:\\My Desktop\\BigData\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
+pn_test = 'C:\\Users\\Desktop-TL\\Documents\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
 fn_submit = 'secondsubmission.csv'
-pn_submit = 'X:\\My Desktop\\BigData\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
+pn_submit = 'C:\\Users\\Desktop-TL\\Documents\\GitRepos\\Kaggle-Projects\\TitanicRMS\\'
 
 # Training Data
 df_train = pd.read_csv(pn_train + fn_train, index_col=0, header=0)
@@ -59,7 +59,7 @@ df_test['Survived'] = np.nan
 full_data = [df_train, df_test]
 for dataset in full_data:
     dataset['Embarked'] = dataset['Embarked'].fillna('S')
-    dataset['Embarked'] = dataset['Embarked'].map( {'S': 0, 'C': 1, 'Q': 2} ).astype(int)
+    dataset['Embarked'] = dataset['Embarked'].map({'S': 0, 'C': 1, 'Q': 2}).astype(int)
 
 
 # %% EDA
